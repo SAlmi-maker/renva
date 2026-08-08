@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="renva.favicon.png">
+  <title>Renva — Content Growth Network</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg: #05060f;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.09);
+      --text: #e7eaf3;
+      --muted: #8b91a7;
+      --accent: #4f7dff;
+      --accent-2: #8b5cf6;
+      --cyan: #22d3ee;
+      --glow: rgba(79,125,255,0.45);
+    }
+
+    body {
+      font-family: 'Space Grotesk', 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ---- Animated background ---- */
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      background:
+        radial-gradient(900px 600px at 80% -10%, rgba(139,92,246,0.18), transparent 60%),
+        radial-gradient(700px 500px at 10% 10%, rgba(34,211,238,0.12), transparent 60%),
+        radial-gradient(800px 800px at 50% 120%, rgba(79,125,255,0.15), transparent 60%),
+        var(--bg);
+    }
+    .bg::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.5;
+      animation: float 14s ease-in-out infinite;
+    }
+    .orb-1 { width: 420px; height: 420px; top: -120px; right: -80px; background: #4f7dff; }
+    .orb-2 { width: 340px; height: 340px; bottom: -100px; left: -80px; background: #8b5cf6; animation-delay: -6s; }
+    .orb-3 { width: 260px; height: 260px; top: 40%; left: 55%; background: #22d3ee; opacity: 0.3; animation-delay: -3s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-40px) scale(1.08); }
+    }
+
+    /* ---- Shared reveal animation ---- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ---- Nav ---- */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 28px 24px;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--cyan), var(--accent) 50%, var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      margin-left: 32px;
+      letter-spacing: 0.5px;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: #fff; }
+    @media (max-width: 640px) { .nav-links a { margin-left: 18px; } .nav-links a.hide-mobile { display: none; } }
+
+    /* ---- Hero ---- */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 70px 24px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+    .badge .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    .hero h1 {
+      font-size: clamp(38px, 6vw, 68px);
+      font-weight: 700;
+      line-height: 1.1;
+      margin: 28px auto 0 auto;
+      max-width: 840px;
+      letter-spacing: -1px;
+    }
+    .hero h1 .grad {
+      background: linear-gradient(90deg, var(--cyan), var(--accent) 45%, var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hero p {
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 600px;
+      margin: 22px auto 0 auto;
+      line-height: 1.7;
+    }
+    .hero-cta {
+      margin-top: 38px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 16px 40px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: transform .2s, box-shadow .2s, background .2s;
+    }
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 8px 30px var(--glow), inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 44px var(--glow), inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .btn-ghost {
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.25); transform: translateY(-3px); }
+
+    /* ---- Sections ---- */
+    section { max-width: 1160px; margin: 0 auto; padding: 60px 24px; }
+    .sec-head h2 {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-align: center;
+    }
+    .sec-head .sub {
+      text-align: center;
+      color: var(--muted);
+      font-size: 16px;
+      margin-top: 12px;
+    }
+
+    /* ---- Steps ---- */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin-top: 44px;
+    }
+    @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
+    .step {
+      position: relative;
+      padding: 36px 30px;
+      border-radius: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      transition: transform .25s, border-color .25s;
+      overflow: hidden;
+    }
+    .step::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .step:hover { transform: translateY(-6px); border-color: rgba(79,125,255,0.35); }
+    .step:hover::before { opacity: 1; }
+    .step .num {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 24px var(--glow);
+      margin-bottom: 20px;
+    }
+    .step h3 { font-size: 19px; margin-bottom: 10px; }
+    .step p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* ---- Form ---- */
+    .form-card {
+      max-width: 680px;
+      margin: 44px auto 0 auto;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      padding: 40px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+    @media (max-width: 560px) { .form-card { padding: 28px 20px; } }
+    .form-card h2 { font-size: 24px; text-align: center; }
+    .form-card .sub { text-align: center; color: var(--muted); font-size: 14px; margin: 10px 0 32px; }
+
+    .field { margin-bottom: 20px; }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #c6cbdd;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+    .field label .req { color: var(--cyan); }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 13px 15px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: #5a6072; }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.08);
+      box-shadow: 0 0 0 3px rgba(79,125,255,0.2), 0 0 24px rgba(79,125,255,0.15);
+    }
+    .field select option { background: #14162a; color: #e7eaf3; }
+    .field textarea { resize: vertical; min-height: 90px; }
+    .row { display: flex; gap: 16px; }
+    .row .field { flex: 1; }
+    @media (max-width: 560px) { .row { flex-direction: column; gap: 0; } }
+    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 420px) { .check-grid { grid-template-columns: 1fr; } }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .check-item:hover { border-color: rgba(79,125,255,0.4); }
+    .check-item:has(input:checked) {
+      border-color: var(--accent);
+      background: rgba(79,125,255,0.12);
+      box-shadow: 0 0 18px rgba(79,125,255,0.15);
+    }
+    .check-item input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .check-item span { font-size: 14px; color: var(--text); }
+
+    .btn-submit {
+      width: 100%;
+      margin-top: 8px;
+      padding: 17px 0;
+      font-size: 16px;
+    }
+    .note {
+      font-size: 12.5px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-top: 18px;
+    }
+
+    /* ---- Success ---- */
+    .success { display: none; text-align: center; padding: 20px 0; }
+    .success .icon {
+      width: 68px; height: 68px;
+      margin: 0 auto 22px auto;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      background: rgba(34,211,238,0.12);
+      border: 1px solid rgba(34,211,238,0.4);
+      box-shadow: 0 0 40px rgba(34,211,238,0.3);
+      color: var(--cyan);
+    }
+    .success h2 { font-size: 24px; margin-bottom: 12px; }
+    .success p { color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+    /* ---- Footer ---- */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
+    }
+    footer strong { color: var(--text); }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { color: var(--cyan); }
+
+    /* ---- Reveal trigger ---- */
+    @media (prefers-reduced-motion: reduce) {
+      .orb, .badge .dot { animation: none; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="reveal visible">
+    <div class="logo">Renva</div>
+    <div class="nav-links">
+      <a href="#how" class="hide-mobile">How It Works</a>
+      <a href="#join">Join</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="reveal visible">
+      <span class="badge"><span class="dot"></span> Content Growth Network</span>
+      <h1>Grow Your Channel With <span class="grad">High-Quality Clips</span></h1>
+      <p>
+        Renva turns your best moments into polished short-form videos for
+        YouTube Shorts, TikTok, and Reels — we handle everything so you can focus on creating.
+      </p>
+      <div class="hero-cta">
+        <a href="#join" class="btn btn-primary">Submit Your Channel</a>
+        <a href="#how" class="btn btn-ghost">See How It Works</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- How it works -->
+  <section id="how">
+    <div class="sec-head reveal">
+      <h2>How It Works</h2>
+      <p class="sub">Three simple steps between you and more viewers</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="num">01</div>
+        <h3>Submit Your Details</h3>
+        <p>Fill in your channel info below. It takes less than a minute.</p>
+      </div>
+      <div class="step reveal">
+        <div class="num">02</div>
+        <h3>We Reach Out</h3>
+        <p>Our team contacts you via email or WhatsApp with next steps.</p>
+      </div>
+      <div class="step reveal">
+        <div class="num">03</div>
+        <h3>Watch It Grow</h3>
+        <p>We produce and post clips that bring new viewers to your channel.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Form -->
+  <section id="join">
+    <div class="sec-head reveal">
+      <h2>Join Renva</h2>
+      <p class="sub">No commitment and no cost to get started</p>
+    </div>
+
+    <div class="form-card reveal">
+      <div id="formWrap">
+        <h2>Submit Your Channel</h2>
+        <p class="sub">We'll reach out via email or WhatsApp</p>
+
+        <form id="renvaForm" action="https://formspree.io/f/xaqgnzog" method="POST">
+
+          <input type="hidden" name="_subject" value="New Renva Submission — [Channel Name]">
+
+          <div class="row">
+            <div class="field">
+              <label>Full Name <span class="req">*</span></label>
+              <input type="text" name="Full Name" placeholder="Your name" required>
+            </div>
+            <div class="field">
+              <label>Channel Name <span class="req">*</span></label>
+              <input type="text" name="Channel Name" placeholder="Your channel name" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>YouTube Channel Link <span class="req">*</span></label>
+            <input type="url" name="Channel Link" placeholder="https://youtube.com/@yourchannel" required>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Email <span class="req">*</span></label>
+              <input type="email" name="Email" placeholder="you@email.com" required>
+            </div>
+            <div class="field">
+              <label>WhatsApp Number</label>
+              <input type="tel" name="WhatsApp Number" placeholder="+1 555 000 0000">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Content Type</label>
+            <select name="Content Type">
+              <option value="">Select niche</option>
+              <option>Gaming</option>
+              <option>Tech &amp; Reviews</option>
+              <option>Finance / Business</option>
+              <option>Lifestyle</option>
+              <option>Education</option>
+              <option>Entertainment</option>
+              <option>Sports</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Anything else we should know?</label>
+            <textarea name="Notes" placeholder="Upload schedule, goals, platforms you want clips for..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-submit">Submit My Channel</button>
+
+          <p class="note">Your information stays with Renva and is only used to reach you about the partnership.</p>
+        </form>
+      </div>
+
+      <div class="success" id="success">
+        <div class="icon">&#10004;</div>
+        <h2>Thank you — you're in!</h2>
+        <p>
+          Your details have been received. The Renva team will reach out to you
+          shortly via <strong>email or WhatsApp</strong> with the next steps.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <strong>Renva</strong> &nbsp;·&nbsp; Content Growth Network<br>
+    <a href="mailto:contact@renva.space">contact@renva.space</a> &nbsp;·&nbsp; <a href="https://renva.space">renva.space</a>
+  </footer>
+
+  <script>
+    // Reveal on scroll
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    // Form submission via Formspree (AJAX keeps the success screen)
+    const form = document.getElementById('renvaForm');
+    const wrap = document.getElementById('formWrap');
+    const success = document.getElementById('success');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (res.ok) {
+          wrap.style.display = 'none';
+          success.style.display = 'block';
+          success.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          const data = await res.json();
+          const msg = (data.errors && data.errors.length) ? data.errors.map(x => x.message).join(', ') : 'Something went wrong. Please try again.';
+          alert(msg);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit My Channel';
+        }
+      } catch (err) {
+        alert('Network error — please check your connection and try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit My Channel';
+      }
+    });
+  </script>
+
+</body>
+</html>
